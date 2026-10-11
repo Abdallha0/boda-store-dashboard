@@ -1,4 +1,5 @@
 import axios from "axios";
+import { handleError } from "../helpers/handleErrorMSG";
 
 const url = import.meta.env.VITE_SERVER;
 
@@ -29,7 +30,7 @@ api.interceptors.response.use(
   (error) => {
     if (!navigator.onLine || (axios.isAxiosError(error) && !error.response)) {
       return Promise.reject(
-        new Error("Network error please check your connection"),
+        new Error(handleError(error).message || "Internal Server Error"),
       );
     }
     return Promise.reject(error);
