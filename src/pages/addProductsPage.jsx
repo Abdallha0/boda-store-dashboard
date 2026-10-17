@@ -6,6 +6,7 @@ import { addProducts } from "../services/products-api";
 import { toast } from "react-toastify";
 import { toastStyles } from "../helpers/tones";
 import { LoaderCircle } from "lucide-react";
+import { body } from "framer-motion/client";
 
 export const ProductsInitialDate = {
   name: "",
@@ -25,7 +26,10 @@ export const ProductsInitialDate = {
 
 function AddProductsPage() {
   const [productGallery, setProductGallery] = useState([]);
-  const [productData, setProductData] = useState({ ...ProductsInitialDate, tags: [] });
+  const [productData, setProductData] = useState({
+    ...ProductsInitialDate,
+    tags: [],
+  });
   const [resetSignal, setResetSignal] = useState(0);
 
   const [isSaving, setSaving] = useState(false);
@@ -49,11 +53,14 @@ function AddProductsPage() {
     for (const [key, value] of Object.entries(productPayload)) {
       if (key === "images") {
         value.forEach((file) => formData.append("images", file));
+      } else if (!value) {
+        toast.info("Please fill all fields", { style: toastStyles.info });
+        return;
       } else {
         formData.append(key, value);
       }
     }
-
+    
     addProducts(formData)
       .then((response) => {
         if (response && response.success) {
@@ -75,6 +82,10 @@ function AddProductsPage() {
         });
       });
   };
+
+  if (isSaving) {
+    document.body.style.overflow = "hidden";
+  }
 
   return (
     <main className="p-4 space-y-6">

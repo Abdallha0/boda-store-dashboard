@@ -300,7 +300,7 @@ function EnteredDataSec({ setProductData, onPublish, productData, isSaving, rese
           <button
             disabled={isSaving}
             onClick={onPublish}
-            className="inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold bg-cyan-600 text-white shadow-sm hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 transition active:scale-[0.98]"
+            className="inline-flex disabled:opacity-50 items-center justify-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold bg-cyan-600 text-white shadow-sm hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400 transition active:scale-[0.98]"
             type="submit"
           >
             <CheckCircle size={18} />
