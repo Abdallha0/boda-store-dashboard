@@ -55,7 +55,7 @@ function EnteredDataSec({ setProductData, onPublish, productData, isSaving, rese
   }, [product]);
 
   return (
-    <section className="rounded-2xl border border-slate-100 bg-white p-8 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+    <section className="flex-1 rounded-2xl border border-slate-100 bg-white p-8 shadow-lg dark:border-slate-800 dark:bg-slate-900">
       <div className="grid gap-6">
         <h2 className="text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight mb-2">
           Basic Information
@@ -238,7 +238,7 @@ function EnteredDataSec({ setProductData, onPublish, productData, isSaving, rese
               </button>
             </form>
           </label>
-          <div className="mt-4 max-w-xs flex flex-wrap gap-2.5">
+          <div className="mt-4 flex flex-wrap gap-2.5">
             {product.tags.map((i) => (
               <span
                 key={i}

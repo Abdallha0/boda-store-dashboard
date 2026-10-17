@@ -12,14 +12,20 @@ const FormField = ({ label, children, required }) => (
 const Input = (props) => {
   const [q, setQ] = useState("");
   useEffect(() => {
-    if (props.value) {
+    if (typeof props.value === "number" || props.value) {
       setQ(props.value);
     }
   }, [props]);
 
   return (
     <input
-      onChange={(e) => setQ(e.target.value)}
+      onChange={(e) => {
+        setQ(e.target.value);
+        props.setChanges((prev) => ({
+          ...prev,
+          [e.target.name]: e.target.value,
+        }));
+      }}
       {...props}
       value={q}
       className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-600 dark:focus:border-cyan-500"

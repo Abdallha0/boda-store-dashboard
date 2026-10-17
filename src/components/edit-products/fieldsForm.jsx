@@ -9,6 +9,8 @@ import {
   LoaderCircle,
   StarOff,
   PowerOff,
+  X,
+  Plus,
 } from "lucide-react";
 import { Input, FormField } from "./utilsComponents";
 import CustomDropdown from "../products/customDropdown";
@@ -16,7 +18,6 @@ import { categoriesArray } from "../../helpers/statices";
 import { updateProduct } from "../../services/products-api";
 import { toast } from "react-toastify";
 import { toastStyles } from "../../helpers/tones";
-import { hasProductChanges } from "./hasChanges";
 import FieldsFormSkeleton from "./fieldsFormSkeleton";
 
 function FieldsFormComponent({
@@ -37,17 +38,13 @@ function FieldsFormComponent({
   const [isActive, setIsActive] = useState(product?.isActive);
   const [images, setImages] = useState(product?.images ?? []);
   const [deletedImages, setDeletedImages] = useState([]);
-  const [descriptions, setDescriptions] = useState({
-    description: product?.description,
-    shortDescription: product?.shortDescription,
-  });
+  const [tags, setTags] = useState([]);
   const [formKey, setFormKey] = useState(0);
 
+  const [changes, setChanges] = useState(null);
+
   useEffect(() => {
-    setDescriptions({
-      description: product?.description,
-      shortDescription: product?.shortDescription,
-    });
+    setTags(product?.tags);
     setImages(product?.images ?? []);
     setIsFeatured(Boolean(product?.featured));
     setIsActive(Boolean(product?.isActive));
@@ -75,33 +72,27 @@ function FieldsFormComponent({
     setDeletedImages([...deletedImages, image]);
   };
 
-  function submitChanges(formData) {
-    const changed = hasProductChanges({
-      formData,
-      product,
-      descriptions,
-      category,
-      isFeatured,
-      isActive,
-      files,
-      deletedImages,
-    });
-    if (!changed) {
+  function submitChanges() {
+    if (
+      !files.length &&
+      !deletedImages.length &&
+      !Object.keys(changes).length
+    ) {
       toast.info("No changes to save.", { style: toastStyles.info });
       return;
     }
 
-    setIsSaving(true);
-    files.forEach((file) => formData.append("images", file));
-    formData.append("featured", isFeatured);
-    formData.append("isActive", isActive);
-    formData.append("category", category.target.value);
-    formData.append(
-      "deletedImages",
-      JSON.stringify(deletedImages.map((image) => image.public_id)),
-    );
+    const payload = new FormData();
+    Object.entries(changes).forEach(([k, v]) => payload.append(k, v));
+    files.forEach((file) => payload.append("images", file));
+    if (deletedImages.length)
+      payload.append(
+        "deletedImages",
+        JSON.stringify(deletedImages.map((i) => i.public_id)),
+      );
 
-    updateProduct(product._id, formData)
+    setIsSaving(true);
+    updateProduct(product._id, payload)
       .then((res) => {
         if (res.success) {
           toast.success(res.message || "Product updated successfully!", {
@@ -128,10 +119,7 @@ function FieldsFormComponent({
 
   function discardChanges() {
     // Reset all local state back to the original product prop values
-    setDescriptions({
-      description: product.description,
-      shortDescription: product.shortDescription,
-    });
+    setChanges(null);
     setImages(product.images ?? []);
     setIsFeatured(Boolean(product.featured));
     setIsActive(Boolean(product.isActive));
@@ -148,7 +136,7 @@ function FieldsFormComponent({
     setFormKey((k) => k + 1);
   }
   const imageInput = useRef(null);
-
+  const tagsQueryRef = useRef("");
   return (
     <form
       key={formKey}
@@ -160,11 +148,19 @@ function FieldsFormComponent({
         <div className="space-y-6">
           <div className="grid gap-5 md:grid-cols-2">
             <FormField label="Product Name" required>
-              <Input name="name" value={product.name} />
+              <Input
+                setChanges={setChanges}
+                name="name"
+                placeholder={product.name}
+              />
             </FormField>
 
             <FormField label="SKU" required>
-              <Input name="sku" value={product.sku} />
+              <Input
+                setChanges={setChanges}
+                name="sku"
+                placeholder={product.sku}
+              />
             </FormField>
           </div>
 
@@ -172,12 +168,12 @@ function FieldsFormComponent({
             {product.shortDescription ? (
               <textarea
                 onChange={(e) =>
-                  setDescriptions({
-                    ...descriptions,
+                  setChanges((prev) => ({
+                    ...prev,
                     shortDescription: e.target.value,
-                  })
+                  }))
                 }
-                value={descriptions.shortDescription || ""}
+                placeholder={product.shortDescription || ""}
                 rows={3}
                 name="shortDescription"
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
@@ -197,12 +193,12 @@ function FieldsFormComponent({
             {product.description ? (
               <textarea
                 onChange={(e) =>
-                  setDescriptions({
-                    ...descriptions,
-                    description: e.target.value,
-                  })
+                  setChanges((prev) => ({
+                    ...prev,
+                    descriptions: e.target.value,
+                  }))
                 }
-                value={descriptions.description || ""}
+                placeholder={product.description || ""}
                 name="description"
                 rows={5}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
@@ -224,7 +220,12 @@ function FieldsFormComponent({
                 <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-500">
                   $
                 </span>
-                <Input name="price" value={product.price} className="pl-8" />
+                <Input
+                  setChanges={setChanges}
+                  name="price"
+                  placeholder={product.price}
+                  className="pl-8"
+                />
               </div>
             </FormField>
 
@@ -234,7 +235,8 @@ function FieldsFormComponent({
                   $
                 </span>
                 <Input
-                  value={product.discountPrice || 0}
+                  setChanges={setChanges}
+                  placeholder={product.discountPrice}
                   name="discountPrice"
                   className="pl-8"
                 />
@@ -244,11 +246,19 @@ function FieldsFormComponent({
 
           <div className="grid gap-5 md:grid-cols-2">
             <FormField label="Stock">
-              <Input name="stock" value={product.stock} />
+              <Input
+                setChanges={setChanges}
+                name="stock"
+                placeholder={product.stock}
+              />
             </FormField>
 
             <FormField label="Brand">
-              <Input name="brand" value={product.brand} />
+              <Input
+                setChanges={setChanges}
+                name="brand"
+                placeholder={product.brand}
+              />
             </FormField>
           </div>
 
@@ -267,20 +277,66 @@ function FieldsFormComponent({
 
             <FormField label="Subcategory">
               <div className="relative">
-                <Input name="subcategory" value={product.subcategory} />
+                <Input
+                  setChanges={setChanges}
+                  name="subcategory"
+                  placeholder={product.subcategory}
+                />
               </div>
             </FormField>
           </div>
 
-          <FormField label="Tags">
-            <div className="relative">
-              <Input
+          <div className="relative">
+            <div className="flex gap-3">
+              <input
                 name="tags"
-                value={Array.isArray(product.tags) && product.tags.join(" | ")}
-                className="pl-10"
+                placeholder="Add new tag"
+                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:placeholder-slate-600 dark:focus:border-cyan-500"
+                ref={tagsQueryRef}
+                onFocus={(e) => (e.target.value = tags.join(", "))}
               />
+
+              <button
+                type="button"
+                onClick={() => {
+                  const value = tagsQueryRef.current.value.split(", ");
+                  setTags(value);
+                  setChanges((prev) => ({
+                    ...prev,
+                    tags: JSON.stringify(value),
+                  }));
+                }}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm transition hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-[0.98]"
+              >
+                <Plus size={20} />
+              </button>
             </div>
-          </FormField>
+
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              {tags.map((i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 rounded-full bg-cyan-400/25 border dark:text-white border-cyan-400 px-3 py-1 text-xs font-medium text-slate-800"
+                >
+                  {i}
+                  <button
+                    onClick={() => {
+                      const removeItem = tags.filter((it) => it !== i);
+                      setTags(removeItem);
+                      setChanges((prev) => ({
+                        ...prev,
+                        tags: JSON.stringify(removeItem),
+                      }));
+                    }}
+                    type="button"
+                    className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-400"
+                  >
+                    <X size={14} />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -299,6 +355,7 @@ function FieldsFormComponent({
                 Add Image
               </button>
               <input
+                setChanges={setChanges}
                 type="file"
                 ref={imageInput}
                 onChange={handleAddImages}
@@ -350,7 +407,13 @@ function FieldsFormComponent({
                 </div>
               ) : (
                 <div
-                  onClick={() => setIsActive(!isActive)}
+                  onClick={() => {
+                    setIsActive(!isActive);
+                    setChanges((prev) => ({
+                      ...prev,
+                      isActive: !isActive,
+                    }));
+                  }}
                   className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
                 >
                   <div className="flex items-center gap-2">
@@ -382,7 +445,13 @@ function FieldsFormComponent({
                 </div>
               ) : (
                 <div
-                  onClick={() => setIsFeatured(!isFeatured)}
+                  onClick={() => {
+                    setIsFeatured(!isFeatured);
+                    setChanges((prev) => ({
+                      ...prev,
+                      featured: !isFeatured,
+                    }));
+                  }}
                   className="cursor-pointer flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
                 >
                   <div className="flex items-center gap-2">
@@ -412,6 +481,7 @@ function FieldsFormComponent({
           </div>
         </div>
       </div>
+
       <button
         type="submit"
         ref={submitRef}
