@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { QuickEditContext } from "../../pages/ProductsPage";
 import ImageCarousel from "./ImageCarousel";
 
-
 function ProductCard({ product }) {
   const { setQuickEdit, deleteProduct } = useContext(QuickEditContext);
 
@@ -13,7 +12,6 @@ function ProductCard({ product }) {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } },
   };
-
 
   return (
     <motion.article
@@ -42,11 +40,17 @@ function ProductCard({ product }) {
         {/* Pricing */}
         <div className="flex items-end gap-3">
           <span className="text-3xl font-black text-slate-900 dark:text-white">
-            ${product.price}
+            <sup className="text-sm font-semibold">EGP</sup>
+            {product.price}
           </span>
           {product.discountPrice > 1 && (
             <span className="mb-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-              −${product.discountPrice} off
+              −
+              {(
+                ((product.price - product.discountPrice) / product.price) *
+                100
+              ).toFixed()}{" "}
+              % off
             </span>
           )}
         </div>
