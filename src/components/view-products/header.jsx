@@ -48,20 +48,22 @@ function ProductHeader({ title, subtitle }) {
             {title}
           </motion.h1>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex items-center gap-2"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-            <p
-              className="text-xs font-bold uppercase tracking-[0.2em] 
-                          text-slate-400 dark:text-slate-500"
+          {subtitle && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-2"
             >
-              {subtitle}
-            </p>
-          </motion.div>
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              <p
+                className="text-xs font-bold uppercase tracking-[0.2em] 
+                          text-slate-400 dark:text-slate-500"
+              >
+                {subtitle}
+              </p>
+            </motion.div>
+          )}
         </div>
       </div>
     </motion.div>

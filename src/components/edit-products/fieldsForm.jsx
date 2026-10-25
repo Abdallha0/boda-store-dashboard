@@ -146,20 +146,18 @@ function FieldsFormComponent({
     >
       <div className="grid gap-6 xl:grid-cols-[1.4fr_0.9fr]">
         <div className="space-y-6">
+          <FormField label="Product Name" required>
+            <Input setChanges={setChanges} name="name" placeholder={product.name} />
+          </FormField>
           <div className="grid gap-5 md:grid-cols-2">
-            <FormField label="Product Name" required>
-              <Input
-                setChanges={setChanges}
-                name="name"
-                placeholder={product.name}
-              />
-            </FormField>
-
             <FormField label="SKU" required>
+              <Input setChanges={setChanges} name="sku" placeholder={product.sku} />
+            </FormField>
+            <FormField label="Badge">
               <Input
                 setChanges={setChanges}
-                name="sku"
-                placeholder={product.sku}
+                name="badge"
+                placeholder={product.badge || ""}
               />
             </FormField>
           </div>
@@ -217,9 +215,6 @@ function FieldsFormComponent({
           <div className="grid gap-5 md:grid-cols-2">
             <FormField label="Price">
               <div className="relative">
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-500">
-                  $
-                </span>
                 <Input
                   setChanges={setChanges}
                   name="price"
@@ -231,9 +226,6 @@ function FieldsFormComponent({
 
             <FormField label="Discount Price">
               <div className="relative">
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-500">
-                  $
-                </span>
                 <Input
                   setChanges={setChanges}
                   placeholder={product.discountPrice}
@@ -252,7 +244,6 @@ function FieldsFormComponent({
                 placeholder={product.stock}
               />
             </FormField>
-
             <FormField label="Brand">
               <Input
                 setChanges={setChanges}

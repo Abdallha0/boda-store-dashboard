@@ -93,7 +93,7 @@ function OrderDetailSidebar({ setOrder, targetOrder, onOrderUpdate }) {
 
   if (isLoading) return <OrderDetailSidebarSkeleton setOrder={setOrder} />;
   return (
-    <aside className="flex fixed top-0 z-999 right-0 h-screen w-sm max-w-md flex-col border-l border-slate-200 bg-white text-slate-900 shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100">
+    <aside className="flex fixed top-0 sm:w-screen z-999 right-0 h-screen w-sm max-w-md flex-col border-l border-slate-200 bg-white text-slate-900 shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100">
       {/* Header */}
       <header className="flex items-start justify-between border-b border-slate-200 px-6 py-5 dark:border-slate-800">
         <div>

@@ -89,7 +89,7 @@ function ViewProductPage() {
 
   return (
     <main className="p-4 space-y-6">
-      <ProductHeader title={product.name} subtitle={product.shortDescription} />
+      <ProductHeader title={product.name} subtitle={product.badge || ""} />
       <ProductDetailView product={product} />
     </main>
   );

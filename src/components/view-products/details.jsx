@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import GallerySec from "./gallerySec";
 import Info from "./Info";
 
@@ -31,4 +31,4 @@ function ProductDetailView({ product }) {
   );
 }
 
-export default ProductDetailView;
+export default React.memo(ProductDetailView);

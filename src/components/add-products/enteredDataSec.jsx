@@ -19,7 +19,13 @@ function reducer(state, action) {
   }
 }
 
-function EnteredDataSec({ setProductData, onPublish, productData, isSaving, resetSignal }) {
+function EnteredDataSec({
+  setProductData,
+  onPublish,
+  productData,
+  isSaving,
+  resetSignal,
+}) {
   const getSavedProduct = JSON.parse(sessionStorage.getItem("productData"));
   const [product, dispatch] = useReducer(
     reducer,
@@ -187,21 +193,33 @@ function EnteredDataSec({ setProductData, onPublish, productData, isSaving, rese
               className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-950 placeholder:text-slate-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-600"
             />
           </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200">
+              Brand
+            </span>
+            <input
+              onChange={handleChanges}
+              name="brand"
+              value={product.brand}
+              placeholder="Apple"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-950 placeholder:text-slate-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-600"
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200">
+              Badge
+            </span>
+            <input
+              onChange={handleChanges}
+              name="badge"
+              value={product.badge}
+              placeholder="New Arrival"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-950 placeholder:text-slate-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-600"
+            />
+          </label>
         </div>
-
-        <label className="block">
-          <span className="mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200">
-            Brand
-          </span>
-          <input
-            onChange={handleChanges}
-            name="brand"
-            value={product.brand}
-            placeholder="Apple"
-            className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-950 placeholder:text-slate-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-600"
-          />
-        </label>
-
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-950/80">
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200">
@@ -210,15 +228,16 @@ function EnteredDataSec({ setProductData, onPublish, productData, isSaving, rese
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (
-                  !e.target.tags.value ||
-                  product.tags.includes(e.target.tags.value)
-                )
-                  return;
+                let tags = e.target.tags.value;
+
+                if (!tags || product.tags.includes(tags)) return;
+                if (tags.includes(",")) {
+                  tags = tags.split(",");
+                }
                 handleChanges({
                   target: {
                     name: "tags",
-                    value: [...product.tags, e.target.tags.value],
+                    value: [...product.tags, ...tags],
                   },
                 });
                 e.target.tags.value = "";

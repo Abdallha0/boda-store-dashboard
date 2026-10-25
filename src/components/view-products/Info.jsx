@@ -1,14 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import {
-  Tag,
-  ShoppingBag,
-  Star,
-  ChevronLeft,
-  ChevronRight,
-  Share2,
-  Heart,
-} from "lucide-react";
+import { Tag, ShoppingBag, Star } from "lucide-react";
 import Card from "./Card";
 
 function Info({ data }) {
@@ -50,7 +42,10 @@ function Info({ data }) {
           { label: "Price", value: data.price, color: "text-emerald-500" },
           {
             label: "Discount",
-            value: data.discountPrice,
+            value: `${(
+              ((data.price - data.discountPrice) / data.price) *
+              100
+            ).toFixed()}%`,
             color: "text-rose-500",
           },
           { label: "Stock", value: data.stock, color: "text-amber-500" },
