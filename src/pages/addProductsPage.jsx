@@ -85,8 +85,9 @@ function AddProductsPage() {
 
   if (isSaving) {
     document.body.style.overflow = "hidden";
-  }
-
+  } else {
+document.body.style.overflow = "auto";
+}
   return (
     <main className="p-4 space-y-6">
       {isSaving && (
