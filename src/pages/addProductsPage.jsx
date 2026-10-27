@@ -55,6 +55,7 @@ function AddProductsPage() {
         value.forEach((file) => formData.append("images", file));
       } else if (!value) {
         toast.info("Please fill all fields", { style: toastStyles.info });
+        setSaving(false);
         return;
       } else {
         formData.append(key, value);
@@ -83,11 +84,6 @@ function AddProductsPage() {
       });
   };
 
-  if (isSaving) {
-    document.body.style.overflow = "hidden";
-  } else {
-document.body.style.overflow = "auto";
-}
   return (
     <main className="p-4 space-y-6">
       {isSaving && (
