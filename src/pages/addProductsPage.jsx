@@ -6,7 +6,6 @@ import { addProducts } from "../services/products-api";
 import { toast } from "react-toastify";
 import { toastStyles } from "../helpers/tones";
 import { LoaderCircle } from "lucide-react";
-import { body } from "framer-motion/client";
 
 export const ProductsInitialDate = {
   name: "",
@@ -19,6 +18,7 @@ export const ProductsInitialDate = {
   category: "",
   subcategory: "",
   brand: "",
+  badge: "",
   tags: [],
   isActive: false,
   featured: false,
@@ -41,47 +41,93 @@ function AddProductsPage() {
     setResetSignal((prev) => prev + 1);
   };
 
-  const onPublish = () => {
-    setSaving(true);
+  // Module level: created once, not on every render
+  const OPTIONAL_FIELDS = new Set([
+    "discountPrice",
+    "badge",
+    "featured",
+    "isActive",
+  ]);
+  const MIN_LENGTHS = { shortDescription: 10, description: 20 };
+
+  const isEmpty = (value) =>
+    value == null || (typeof value === "string" && value.trim() === "");
+
+  function validateProduct(payload) {
+    const { images, tags, ...rest } = payload;
+
+    if (!images?.length) return "You should add at least one image";
+
+    let parsedTags = null;
+    try {
+      parsedTags = JSON.parse(tags);
+    } catch {
+      // falls through to the check below
+    }
+    if (!Array.isArray(parsedTags) || parsedTags.length < 1) {
+      return "You should add at least one tag";
+    }
+
+    for (const [key, value] of Object.entries(rest)) {
+      if (isEmpty(value)) {
+        if (!OPTIONAL_FIELDS.has(key)) return `${key} is required`;
+        continue;
+      }
+      const min = MIN_LENGTHS[key];
+      if (min && String(value).trim().length < min) {
+        return `${key} must be at least ${min} characters long`;
+      }
+    }
+
+    return null;
+  }
+
+  function buildFormData(payload) {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(payload)) {
+      if (key === "images") {
+        value.forEach((file) => formData.append("images", file));
+      } else if (value != null) {
+        formData.append(key, value); // tags goes through here as a JSON string
+      }
+    }
+    return formData;
+  }
+
+  // Inside your component
+  const onPublish = async () => {
     const productPayload = {
       ...productData,
       tags: JSON.stringify(productData.tags),
       images: productGallery,
     };
-    const formData = new FormData();
 
-    for (const [key, value] of Object.entries(productPayload)) {
-      if (key === "images") {
-        value.forEach((file) => formData.append("images", file));
-      } else if (!value) {
-        toast.info("Please fill all fields", { style: toastStyles.info });
-        setSaving(false);
-        return;
-      } else {
-        formData.append(key, value);
-      }
+    const validationError = validateProduct(productPayload);
+    if (validationError) {
+      toast.info(validationError, { style: toastStyles.info });
+      return; // setSaving(true) has not been called yet
     }
 
-    addProducts(formData)
-      .then((response) => {
-        if (response && response.success) {
-          toast.success(response.message || "Product added successfully!", {
-            style: toastStyles.success,
-          });
-          resetFormState();
-        } else {
-          toast.error(response.message || "Failed to add product.", {
-            style: toastStyles.error,
-          });
-        }
-        setSaving(false);
-      })
-      .catch((error) => {
-        setSaving(false);
-        toast.error("Error adding product.", {
+    setSaving(true);
+    try {
+      const response = await addProducts(buildFormData(productPayload));
+
+      if (response?.success) {
+        toast.success(response.message || "Product added successfully!", {
+          style: toastStyles.success,
+        });
+        resetFormState();
+      } else {
+        toast.error(response?.message || "Failed to add product.", {
           style: toastStyles.error,
         });
-      });
+      }
+    } catch (error) {
+      console.error("Failed to add product:", error);
+      toast.error("Error adding product.", { style: toastStyles.error });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

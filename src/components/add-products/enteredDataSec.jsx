@@ -88,6 +88,7 @@ function EnteredDataSec({
               name="shortDescription"
               value={product.shortDescription}
               onChange={handleChanges}
+              minLength={10}
               placeholder="Key features in a few words"
               className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-950 placeholder:text-slate-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-600"
             />
@@ -104,6 +105,7 @@ function EnteredDataSec({
             onChange={handleChanges}
             rows="4"
             maxLength={1000}
+            minLength={20}
             placeholder="Detailed breakdown of your product..."
             className="resize-none w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-950 placeholder:text-slate-400 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-600"
           />
@@ -228,12 +230,12 @@ function EnteredDataSec({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                let tags = e.target.tags.value;
+                let tags = e.target.tags.value.split(",");
 
-                if (!tags || product.tags.includes(tags)) return;
-                if (tags.includes(",")) {
-                  tags = tags.split(",");
-                }
+                if (tags.length < 1 || product.tags.includes(...tags)) return;
+
+                tags = tags.filter((it) => !product.tags.includes(it.trim()));
+
                 handleChanges({
                   target: {
                     name: "tags",

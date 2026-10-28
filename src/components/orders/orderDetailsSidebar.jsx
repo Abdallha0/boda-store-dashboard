@@ -224,11 +224,11 @@ function OrderDetailSidebar({ setOrder, targetOrder, onOrderUpdate }) {
                 {item.name}
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                × {item.quantity} · {item.price} EGP
+                × {item.quantity} · {item.price} $
               </p>
             </div>
             <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-              {(item.price * item.quantity).toFixed(2)} EGP
+              {(item.price * item.quantity).toFixed(2)} $
             </p>
           </div>
         ))}
@@ -238,30 +238,30 @@ function OrderDetailSidebar({ setOrder, targetOrder, onOrderUpdate }) {
           <div className="flex justify-between border-b border-slate-100 py-3 text-sm dark:border-slate-800">
             <dt className="text-slate-500 dark:text-slate-400">Subtotal</dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {response.subtotal?.toFixed(2)} EGP
+              {response.subtotal?.toFixed(2)} $
             </dd>
           </div>
           <div className="flex justify-between border-b border-slate-100 py-3 text-sm dark:border-slate-800">
             <dt className="text-slate-500 dark:text-slate-400">Shipping</dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {response.shippingFee?.toFixed(2)} EGP
+              {response.shippingFee?.toFixed(2)} $
             </dd>
           </div>
           <div className="flex justify-between border-b border-slate-100 py-3 text-sm dark:border-slate-800">
             <dt className="text-slate-500 dark:text-slate-400">Tax</dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {response.tax?.toFixed(2)} EGP
+              {response.tax?.toFixed(2)} $
             </dd>
           </div>
           <div className="flex justify-between border-b border-slate-100 py-3 text-sm dark:border-slate-800">
             <dt className="text-slate-500 dark:text-slate-400">Discount</dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {response.discount?.toFixed(2)} EGP
+              {response.discount?.toFixed(2)} $
             </dd>
           </div>
           <div className="flex justify-between pt-4 text-base font-semibold text-slate-900 dark:text-white">
             <dt>Total</dt>
-            <dd>{response.totalPrice?.toFixed(2)} EGP</dd>
+            <dd>{response.totalPrice?.toFixed(2)} $</dd>
           </div>
         </dl>
 

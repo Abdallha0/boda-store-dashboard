@@ -39,17 +39,26 @@ function ProductCard({ product }) {
 
         {/* Pricing */}
         <div className="flex items-end justify-between gap-3">
-          <div className="text-slate-900 flex items-center gap-2 dark:text-white">
-            <span className="text-3xl font-black">
-              <sup className="text-sm font-semibold">EGP</sup>
-              {product.discountPrice}
-            </span>
+          {product.discountPrice ? (
+            <div className="text-slate-900 flex items-center gap-2 dark:text-white">
+              <span className="text-3xl font-black">
+                <sup className="text-sm font-semibold">$</sup>
+                {product.discountPrice}
+              </span>
 
-            <span className="text-sm font-semibold text-gray-400 line-through">
-              <sup className="text-xs font-normal">EGP</sup>
-              {product.price}
-            </span>
-          </div>
+              <span className="text-sm font-semibold text-gray-400 line-through">
+                <sup className="text-xs font-normal">$</sup>
+                {product.price}
+              </span>
+            </div>
+          ) : (
+            <div className="text-slate-900 flex items-center gap-2 dark:text-white">
+              <span className="text-3xl font-black">
+                <sup className="text-sm font-semibold">$</sup>
+                {product.price}
+              </span>
+            </div>
+          )}
           {product.discountPrice > 1 && (
             <span className="mb-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
               −
