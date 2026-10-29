@@ -127,8 +127,15 @@ function ProductsPage() {
   const {
     hasError,
     isLoading,
-    payload: { products, stats, totalProducts, totalPages, currentPage },
+    payload: { products, totalProducts, totalPages, currentPage, categories },
   } = state;
+
+  const stats = {
+    totalProducts: totalProducts ?? 0,
+    featured: products?.filter((i) => i.featured).length || 0,
+    inStock: products?.filter((i) => i.stock >= 1).length || 0,
+    outOfStock: products?.filter((i) => i.stock < 1).length || 0,
+  };
 
   useEffect(() => {
     const currentEdit = P.get("edit");
@@ -182,11 +189,13 @@ function ProductsPage() {
       });
   }
 
+  if(isLoading) return <ProductCardSkeleton />
+
   return (
     <main className="p-4 space-y-6">
       <ProductsHeader />
       <StatCard stats={{ ...stats, totalProducts }} />
-      <ProductsSearchForm setFilterParameters={handleFilterChange} />
+      <ProductsSearchForm categories={categories} setFilterParameters={handleFilterChange} />
       <QuickEditContext.Provider
         value={{ quickEdit, setQuickEdit, deleteProduct }}
       >

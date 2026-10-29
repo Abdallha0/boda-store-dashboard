@@ -15,7 +15,7 @@ function CustomSelect({
   const [categories, setCategory] = useState(options);
   const [newCat, setNewCat] = useState("");
   return (
-    <div className="relative space-y-1.5 w-full" ref={dropdownRef}>
+    <div className="relative space-y-1.5 w-full capitalize" ref={dropdownRef}>
       {showTitle && (
         <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide select-none">
           {label}
@@ -69,7 +69,7 @@ function CustomSelect({
                         : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-200"
                     }`}
                   >
-                    <span className="truncate">{option}</span>
+                    <span className="truncate capitalize">{option}</span>
                     {isSelected && (
                       <Check size={12} className="text-cyan-500 shrink-0" />
                     )}

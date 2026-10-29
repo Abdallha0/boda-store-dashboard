@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, SlidersHorizontal, X} from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import CustomSelect from "./customDropdown";
-import { categoriesArray, sortArray } from "../../helpers/statices";
+import { sortArray } from "../../helpers/statices";
 import { useSearchParams } from "react-router-dom";
 
-function ProductsSearchForm({ setFilterParameters }) {
+function ProductsSearchForm({ setFilterParameters, categories }) {
+  const categoriesArray = [
+    "Select Category",
+    ...categories?.map((i) => i.name),
+  ];
   const [parameters, setParameters] = useSearchParams("");
   const [searchQuery, setSearchQuery] = useState(
     parameters.get("search") || "",
