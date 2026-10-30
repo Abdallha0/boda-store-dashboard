@@ -43,9 +43,8 @@ export function AuthProvider({ children }) {
         } else {
           setUser(null);
           toast.error(res.message, {
-        style: toastStyles.error
-      });
-          useNavigate("/login", { replace: true });
+            style: toastStyles.error,
+          });
         }
       })
       .catch((e) => {

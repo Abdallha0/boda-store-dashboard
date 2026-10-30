@@ -8,11 +8,11 @@ function ProtectedRoute() {
 
   if (status === "loading") {
     return <Loader />;
-  } else if (status === "unauthenticated") {
+  } else if (status === "unauthenticated" || !user) {
     return <Navigate replace to="/login" />;
   }
 
-  if (!user || !user.role) {
+  if (!user.role || user.role !== "admin") {
     return <AccessDenied />;
   }
 
