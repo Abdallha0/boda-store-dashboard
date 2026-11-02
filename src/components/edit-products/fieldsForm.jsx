@@ -41,10 +41,10 @@ function FieldsFormComponent({
   const [tags, setTags] = useState([]);
   const [formKey, setFormKey] = useState(0);
 
-  const [changes, setChanges] = useState(null);
+  const [changes, setChanges] = useState({});
 
   useEffect(() => {
-    setTags(product?.tags);
+    setTags(product?.tags ?? []);
     setImages(product?.images ?? []);
     setIsFeatured(Boolean(product?.featured));
     setIsActive(Boolean(product?.isActive));
@@ -147,11 +147,19 @@ function FieldsFormComponent({
       <div className="grid gap-6 xl:grid-cols-[1.4fr_0.9fr]">
         <div className="space-y-6">
           <FormField label="Product Name" required>
-            <Input setChanges={setChanges} name="name" placeholder={product.name} />
+            <Input
+              setChanges={setChanges}
+              name="name"
+              placeholder={product.name}
+            />
           </FormField>
           <div className="grid gap-5 md:grid-cols-2">
             <FormField label="SKU" required>
-              <Input setChanges={setChanges} name="sku" placeholder={product.sku} />
+              <Input
+                setChanges={setChanges}
+                name="sku"
+                placeholder={product.sku}
+              />
             </FormField>
             <FormField label="Badge">
               <Input
