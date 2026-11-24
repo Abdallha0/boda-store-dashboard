@@ -20,7 +20,12 @@ function ProductCard({ product }) {
       className="group relative flex flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
     >
       {/* Image Carousel */}
-      <ImageCarousel images={product.images} productName={product.name} />
+      <ImageCarousel
+        images={
+          Array.isArray(product.image) ? product.image : [{url: product.image}]
+        }
+        productName={product.name}
+      />
 
       {/* Product Info */}
       <div className="flex flex-1 flex-col gap-4 p-5">
@@ -72,7 +77,7 @@ function ProductCard({ product }) {
         </div>
 
         {/* Tags */}
-        {product.tags.length > 0 && (
+        {product.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {product.tags.map((tag, i) => (
               <span

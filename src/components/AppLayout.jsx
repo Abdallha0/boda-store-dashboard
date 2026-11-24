@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import Header from "./header";
-import { SidebarContext } from "../contexts/SidebarContext";
 import Sidebar from "./sidebar";
 
 function AppLayout() {
@@ -9,7 +8,7 @@ function AppLayout() {
       <Sidebar />
       <div className="w-screen">
         <Header />
-        
+
         <Outlet />
       </div>
     </div>

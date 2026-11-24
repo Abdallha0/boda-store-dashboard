@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { isAbortError } from "../helpers/isAbortError";
 import { toastStyles } from "../helpers/tones";
+import { getTokenCookie, setTokenCookie, removeTokenCookie } from "../helpers/cookies";
 
 export const AuthContext = createContext();
 
@@ -19,7 +20,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    const token = localStorage.getItem("token");
+    const token = getTokenCookie();
 
     if (!token) {
       setStatus(AUTH_STATUS.UNAUTHENTICATED);
@@ -37,11 +38,18 @@ export function AuthProvider({ children }) {
           toast.error(res.message, {
             style: toastStyles.error,
           });
-          localStorage.removeItem("token");
+          removeTokenCookie();
           setUser(null);
           setStatus(AUTH_STATUS.UNAUTHENTICATED);
         } else {
+          if (
+            res.message &&
+            res.message.toLowerCase().includes("network error")
+          ) {
+            window.dispatchEvent(new CustomEvent("app:offline"));
+          }
           setUser(null);
+          setStatus(AUTH_STATUS.UNAUTHENTICATED);
           toast.error(res.message, {
             style: toastStyles.error,
           });
@@ -50,6 +58,7 @@ export function AuthProvider({ children }) {
       .catch((e) => {
         if (controller.signal.aborted || isAbortError(e)) return;
 
+        window.dispatchEvent(new CustomEvent("app:offline"));
         setUser(null);
         setStatus(AUTH_STATUS.UNAUTHENTICATED);
       });
@@ -62,7 +71,7 @@ export function AuthProvider({ children }) {
     const { token, ...data } = res;
 
     if (res.success) {
-      localStorage.setItem("token", token);
+      setTokenCookie(token);
       setUser(res.user);
       setStatus(AUTH_STATUS.AUTHENTICATED);
     }
@@ -71,7 +80,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     const res = await logoutRequest();
-    localStorage.removeItem("token");
+    removeTokenCookie();
     setStatus(AUTH_STATUS.UNAUTHENTICATED);
     setUser(null);
     return res;

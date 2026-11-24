@@ -1,5 +1,6 @@
 import axios from "axios";
 import { handleError } from "../helpers/handleErrorMSG";
+import { getTokenCookie } from "../helpers/cookies";
 
 const url = import.meta.env.VITE_SERVER;
 
@@ -15,7 +16,7 @@ api.interceptors.request.use(
       );
     }
 
-    const token = localStorage.getItem("token");
+    const token = getTokenCookie();
     if (token) {
       config.headers.Authorization = "Bearer " + token;
     }
@@ -26,13 +27,27 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("app:online"));
+    }
+    return response;
+  },
   (error) => {
-    if (!navigator.onLine || (axios.isAxiosError(error) && !error.response)) {
+    const isNetworkError =
+      !navigator.onLine ||
+      (axios.isAxiosError(error) &&
+        (!error.response ||
+          error.code === "ERR_NETWORK" ||
+          error.code === "ECONNABORTED"));
+
+    if (isNetworkError && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("app:offline"));
       return Promise.reject(
-        new Error(handleError(error).message || "Internal Server Error"),
+        new Error("Network error please check your connection"),
       );
     }
+
     return Promise.reject(error);
   },
 );

@@ -11,6 +11,8 @@ import AppLayout from "./components/AppLayout";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import Loader from "./components/loader";
+import OfflinePage from "./components/OfflinePage";
+import useOnlineStatus from "./hooks/useOnlineStatus";
 
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
@@ -24,6 +26,10 @@ const UsersPage = lazy(() => import("./pages/UsersPage"));
 const ProductsPage = lazy(() => import("./pages/ProductsPage"));
 
 function App() {
+  const isOnline = useOnlineStatus();
+
+  if (!isOnline) return <OfflinePage />;
+
   return (
     <>
       <BrowserRouter>
